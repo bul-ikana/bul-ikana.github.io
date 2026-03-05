@@ -7,7 +7,7 @@ import "@fontsource/inter";
 import "@fontsource/jetbrains-mono";
 
 function App() {
-  const mousePosition = useMouse();
+  const interactionPosition = useMouse();
   const { theme, toggleTheme } = useTheme();
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
@@ -21,6 +21,13 @@ function App() {
   return (
     <div
       onClick={handleBackgroundClick}
+      onTouchStart={() => {
+        // Request orientation permission on first touch for iOS
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobile && typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+          (DeviceOrientationEvent as any).requestPermission().catch(console.error);
+        }
+      }}
       style={{
         width: "100vw",
         height: "100vh",
@@ -52,7 +59,7 @@ function App() {
           <SmoothLighting theme={theme} />
 
           {/* Main hexagon grid */}
-          <HexagonGrid mousePosition={mousePosition} theme={theme} />
+          <HexagonGrid mousePosition={interactionPosition} theme={theme} />
         </Suspense>
       </Canvas>
 

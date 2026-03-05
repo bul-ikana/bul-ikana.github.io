@@ -4,11 +4,12 @@ import * as THREE from "three";
 
 interface HexagonProps {
   position: [number, number, number];
-  mousePosition: THREE.Vector3;
+  interactionPosition: THREE.Vector3;
+  isMobile?: boolean;
   theme: "light" | "dark";
 }
 
-export function Hexagon({ position, mousePosition, theme }: HexagonProps) {
+export function Hexagon({ position, interactionPosition, isMobile, theme }: HexagonProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const targetRotation = useRef({ x: 0, y: 0 });
 
@@ -80,19 +81,32 @@ export function Hexagon({ position, mousePosition, theme }: HexagonProps) {
     }
 
     const hexPosition = new THREE.Vector3(...position);
-    const distance = hexPosition.distanceTo(mousePosition);
-    const maxDistance = 5;
-    const influence = Math.max(0, 1 - distance / maxDistance);
+    
+    if (isMobile) {
+      // On mobile, every hexagon rotates based on the overall tilt
+      const maxRotationMobile = Math.PI * (35 / 180); // cap at 35 degrees
 
-    // Calculate rotation based on mouse position and distance
-    const direction = new THREE.Vector3()
-      .subVectors(mousePosition, hexPosition)
-      .normalize();
+      // interactionPosition maps tilt to world space; normalise back to -1..1 range
+      const rawX = THREE.MathUtils.clamp(interactionPosition.x / 10, -1, 1);
+      const rawY = THREE.MathUtils.clamp(interactionPosition.y / 6, -1, 1);
 
-    // Subtle rotation when mouse is closer
-    const maxRotation = Math.PI * 0.3;
-    targetRotation.current.x = direction.y * influence * maxRotation;
-    targetRotation.current.y = direction.x * influence * maxRotation;
+      targetRotation.current.x = -rawY * maxRotationMobile;
+      targetRotation.current.y = rawX * maxRotationMobile;
+    } else {
+      const distance = hexPosition.distanceTo(interactionPosition);
+      const maxDistance = 5;
+      const influence = Math.max(0, 1 - distance / maxDistance);
+
+      // Calculate rotation based on interaction position and distance
+      const direction = new THREE.Vector3()
+        .subVectors(interactionPosition, hexPosition)
+        .normalize();
+
+      // Subtle rotation when mouse is closer
+      const maxRotation = Math.PI * 0.3;
+      targetRotation.current.x = direction.y * influence * maxRotation;
+      targetRotation.current.y = direction.x * influence * maxRotation;
+    }
 
     // Smooth interpolation to target rotation
     const lerpFactor = delta * 4;

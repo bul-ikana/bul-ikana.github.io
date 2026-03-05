@@ -4,7 +4,7 @@ import { Hexagon } from './Hexagon';
 import * as THREE from 'three';
 
 interface HexagonGridProps {
-  mousePosition: { x: number; y: number };
+  mousePosition: { x: number; y: number; isMobile?: boolean };
   theme: 'light' | 'dark';
 }
 
@@ -45,7 +45,7 @@ export function HexagonGrid({ mousePosition, theme }: HexagonGridProps) {
     return hexagons;
   }, []);
 
-  // Convert mouse position to world coordinates
+  // Convert interaction position to world coordinates
   const worldMouse = useMemo(() => {
     if (!mousePosition) return new THREE.Vector3(0, 0, 0);
     
@@ -54,7 +54,7 @@ export function HexagonGrid({ mousePosition, theme }: HexagonGridProps) {
     const y = -(mousePosition.y - 0.5) * 12; // Flip Y and scale
     
     return new THREE.Vector3(x, y, 0);
-  }, [mousePosition]);
+  }, [mousePosition.x, mousePosition.y]);
 
   return (
     <group ref={groupRef}>
@@ -62,7 +62,8 @@ export function HexagonGrid({ mousePosition, theme }: HexagonGridProps) {
         <Hexagon
           key={hex.id}
           position={[hex.x, hex.y, hex.z]}
-          mousePosition={worldMouse}
+          interactionPosition={worldMouse}
+          isMobile={mousePosition.isMobile}
           theme={theme}
         />
       ))}

@@ -1,4 +1,5 @@
-export { HexagonGrid } from './HexagonGrid';
-export { Hexagon } from './Hexagon';
-export { Title } from './Title';
-export { Footer } from './Footer';
+export * from './Footer';
+export * from './HexagonGrid';
+export * from './Hexagon';
+export * from './SmoothLighting';
+export * from './Title';
