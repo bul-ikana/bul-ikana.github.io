@@ -1,15 +1,20 @@
-import React, { useRef, useMemo } from "react";
-import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
+import React, { useRef, useMemo } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
 interface HexagonProps {
   position: [number, number, number];
   interactionPosition: THREE.Vector3;
   isMobile?: boolean;
-  theme: "light" | "dark";
+  theme: 'light' | 'dark';
 }
 
-export function Hexagon({ position, interactionPosition, isMobile, theme }: HexagonProps) {
+export function Hexagon({
+  position,
+  interactionPosition,
+  isMobile,
+  theme,
+}: HexagonProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const targetRotation = useRef({ x: 0, y: 0 });
 
@@ -48,12 +53,12 @@ export function Hexagon({ position, interactionPosition, isMobile, theme }: Hexa
   // Create materials for different parts with smooth transitions
   const materials = useMemo(() => {
     const faceMaterial = new THREE.MeshLambertMaterial({
-      color: "#707070", // Start with dark mode values
-      emissive: "#000000"
+      color: '#707070', // Start with dark mode values
+      emissive: '#000000',
     });
     const edgeMaterial = new THREE.MeshLambertMaterial({
-      color: "#505050", // Start with dark mode values
-      emissive: "#000000"
+      color: '#505050', // Start with dark mode values
+      emissive: '#000000',
     });
     return [faceMaterial, edgeMaterial];
   }, []);
@@ -64,24 +69,24 @@ export function Hexagon({ position, interactionPosition, isMobile, theme }: Hexa
     // Smoothly transition material colors
     if (materials[0] && materials[1]) {
       const colorLerpFactor = delta * 6.5; // Match 0.75s transition speed
-      
-      if (theme === "dark") {
+
+      if (theme === 'dark') {
         // Target dark mode colors
-        materials[0].color.lerp(new THREE.Color("#707070"), colorLerpFactor);
-        materials[0].emissive.lerp(new THREE.Color("#000000"), colorLerpFactor);
-        materials[1].color.lerp(new THREE.Color("#505050"), colorLerpFactor);
-        materials[1].emissive.lerp(new THREE.Color("#000000"), colorLerpFactor);
+        materials[0].color.lerp(new THREE.Color('#707070'), colorLerpFactor);
+        materials[0].emissive.lerp(new THREE.Color('#000000'), colorLerpFactor);
+        materials[1].color.lerp(new THREE.Color('#505050'), colorLerpFactor);
+        materials[1].emissive.lerp(new THREE.Color('#000000'), colorLerpFactor);
       } else {
         // Target light mode colors
-        materials[0].color.lerp(new THREE.Color("#ffffff"), colorLerpFactor);
-        materials[0].emissive.lerp(new THREE.Color("#0a0a0a"), colorLerpFactor);
-        materials[1].color.lerp(new THREE.Color("#ffffff"), colorLerpFactor);
-        materials[1].emissive.lerp(new THREE.Color("#050505"), colorLerpFactor);
+        materials[0].color.lerp(new THREE.Color('#D8D8D2'), colorLerpFactor);
+        materials[0].emissive.lerp(new THREE.Color('#000000'), colorLerpFactor);
+        materials[1].color.lerp(new THREE.Color('#B8B8B2'), colorLerpFactor);
+        materials[1].emissive.lerp(new THREE.Color('#000000'), colorLerpFactor);
       }
     }
 
     const hexPosition = new THREE.Vector3(...position);
-    
+
     if (isMobile) {
       // On mobile, every hexagon rotates based on the overall tilt
       const maxRotationMobile = Math.PI * (35 / 180); // cap at 35 degrees
@@ -113,12 +118,12 @@ export function Hexagon({ position, interactionPosition, isMobile, theme }: Hexa
     meshRef.current.rotation.x = THREE.MathUtils.lerp(
       meshRef.current.rotation.x,
       targetRotation.current.x,
-      lerpFactor,
+      lerpFactor
     );
     meshRef.current.rotation.y = THREE.MathUtils.lerp(
       meshRef.current.rotation.y,
       targetRotation.current.y,
-      lerpFactor,
+      lerpFactor
     );
 
     // Subtle floating animation
